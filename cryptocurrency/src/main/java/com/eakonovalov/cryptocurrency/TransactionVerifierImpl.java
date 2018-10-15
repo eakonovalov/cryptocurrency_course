@@ -2,6 +2,7 @@ package com.eakonovalov.cryptocurrency;
 
 import com.eakonovalov.cryptography.CryptographyHelper;
 
+import java.math.BigDecimal;
 import java.security.PrivateKey;
 
 public class TransactionVerifierImpl {
@@ -19,7 +20,7 @@ public class TransactionVerifierImpl {
 
         //transactions have 2 part: send an amount to the receiver + send the (balance-amount) back to the sender
         t.getOutputs().add(new TransactionOutput(t.getReceiver(), t.getAmount(), t.getId())); //send value to recipient
-        t.getOutputs().add(new TransactionOutput(t.getSender(), getInputsSum(t) - t.getAmount(), t.getId())); //send the left over 'change' back to sender
+        t.getOutputs().add(new TransactionOutput(t.getSender(), getInputsSum(t).subtract(t.getAmount()), t.getId())); //send the left over 'change' back to sender
 
         //the outputs will be inputs for other transactions (so put them in the blockchain's UTXOs)
         for (TransactionOutput transactionOutput : t.getOutputs()) {
@@ -36,21 +37,21 @@ public class TransactionVerifierImpl {
     }
 
     public byte[] generateSignature(Transaction t, PrivateKey privateKey) {
-        String data = t.getSender().toString() + t.getReceiver().toString() + Double.toString(t.getAmount());
+        String data = t.getSender().toString() + t.getReceiver().toString() + t.getAmount().toPlainString();
         return CryptographyHelper.applyECDSASignature(privateKey, data);
     }
 
     private boolean verifySignature(Transaction t) {
-        String data = t.getSender().toString() + t.getReceiver().toString() + Double.toString(t.getAmount());
+        String data = t.getSender().toString() + t.getReceiver().toString() + t.getAmount().toPlainString();
         return CryptographyHelper.verifyECDSASignature(t.getSender(), data, t.getSignature());
     }
 
-    private double getInputsSum(Transaction t) {
-        double sum = 0;
+    private BigDecimal getInputsSum(Transaction t) {
+        BigDecimal sum = new BigDecimal(0);
 
         for (TransactionInput transactionInput : t.getInputs()) {
             if (transactionInput.getUtxo() != null) {
-                sum += transactionInput.getUtxo().getAmount();
+                sum = sum.add(transactionInput.getUtxo().getAmount());
             }
         }
 

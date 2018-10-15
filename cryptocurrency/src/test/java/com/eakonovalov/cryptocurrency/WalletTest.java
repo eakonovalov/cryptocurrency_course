@@ -6,6 +6,7 @@ import com.eakonovalov.blockchain.Constants;
 import com.eakonovalov.blockchain.Miner;
 import org.junit.Test;
 
+import java.math.BigDecimal;
 import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +27,7 @@ public class WalletTest {
         TransactionVerifierImpl verifier = new TransactionVerifierImpl();
 
         //create genesis transaction that sends 500 coins to userA:
-        Transaction genesisTransaction = new Transaction(lender.getPublicKey(), userA.getPublicKey(), 500, null);
+        Transaction genesisTransaction = new Transaction(lender.getPublicKey(), userA.getPublicKey(), new BigDecimal(500), null);
         genesisTransaction.setSignature(verifier.generateSignature(genesisTransaction, lender.getPrivateKey()));
         genesisTransaction.setId("0");
         genesisTransaction.getOutputs().add(new TransactionOutput(genesisTransaction.getReceiver(), genesisTransaction.getAmount(), genesisTransaction.getId()));
@@ -41,7 +42,7 @@ public class WalletTest {
 
         List<Transaction> transactions = new ArrayList<>();
         try {
-            Transaction t = userA.transferMoney(userB.getPublicKey(), 120);
+            Transaction t = userA.transferMoney(userB.getPublicKey(), new BigDecimal(120));
             if (verifier.verifyTransaction(t)) {
                 transactions.add(t);
             }
@@ -58,7 +59,7 @@ public class WalletTest {
         System.out.println("\nuserA sends more funds (600) than it has...");
         transactions = new ArrayList<>();
         try {
-            Transaction t = userA.transferMoney(userB.getPublicKey(), 600);
+            Transaction t = userA.transferMoney(userB.getPublicKey(), new BigDecimal(600));
             if (t != null && verifier.verifyTransaction(t)) {
                 transactions.add(t);
             }
@@ -75,7 +76,7 @@ public class WalletTest {
         System.out.println("\nuserB is attempting to send funds (110) to userA...");
         transactions = new ArrayList<>();
         try {
-            Transaction t = userB.transferMoney(userA.getPublicKey(), 110);
+            Transaction t = userB.transferMoney(userA.getPublicKey(), new BigDecimal(110));
             if (verifier.verifyTransaction(t)) {
                 transactions.add(t);
             }

@@ -2,6 +2,7 @@ package com.eakonovalov.cryptocurrency;
 
 import com.eakonovalov.cryptography.SHA256HashGenerator;
 
+import java.math.BigDecimal;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,7 +15,7 @@ public class Transaction {
     private PublicKey sender;
     private PublicKey receiver;
     //amount of coins the transaction sends to the receiver from the sender
-    private double amount;
+    private BigDecimal amount;
     //make sure the transaction is signed to prevent anyone else from spending the coins
     private byte[] signature;
 
@@ -23,14 +24,14 @@ public class Transaction {
     private List<TransactionOutput> outputs;
 
     // Constructor:
-    public Transaction(PublicKey sender, PublicKey receiver, double amount, List<TransactionInput> inputs) {
+    public Transaction(PublicKey sender, PublicKey receiver, BigDecimal amount, List<TransactionInput> inputs) {
         this.inputs = new ArrayList<>();
         this.outputs = new ArrayList<>();
         this.sender = sender;
         this.receiver = receiver;
         this.amount = amount;
         this.inputs = inputs;
-        this.id = SHA256HashGenerator.generateAsString(sender.toString() + receiver.toString() + Double.toString(amount));
+        this.id = SHA256HashGenerator.generateAsString(sender.toString() + receiver.toString() + amount.toPlainString());
     }
 
     public String getId() {
@@ -57,11 +58,11 @@ public class Transaction {
         this.receiver = receiver;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 

@@ -2,6 +2,7 @@ package com.eakonovalov.cryptocurrency;
 
 import com.eakonovalov.cryptography.CryptographyHelper;
 
+import java.math.BigDecimal;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;
@@ -20,21 +21,21 @@ public class Wallet {
         this.publicKey = keyPair.getPublic();
     }
 
-    public double calculateBalance() {
-        double balance = 0;
+    public BigDecimal calculateBalance() {
+        BigDecimal balance = new BigDecimal(0);
 
         for (Map.Entry<String, TransactionOutput> item : UTXOStorage.UTXOs.entrySet()) {
             TransactionOutput transactionOutput = item.getValue();
             if (transactionOutput.isMine(publicKey)) {
-                balance += transactionOutput.getAmount();
+                balance = balance.add(transactionOutput.getAmount());
             }
         }
 
         return balance;
     }
 
-    public Transaction transferMoney(PublicKey receiver, double amount) {
-        if (calculateBalance() < amount) {
+    public Transaction transferMoney(PublicKey receiver, BigDecimal amount) {
+        if (calculateBalance().compareTo(amount) < 0) {
             throw new NotEnoughOfMoneyException();
         }
 

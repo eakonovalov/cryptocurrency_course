@@ -3,6 +3,7 @@ package com.eakonovalov.cryptocurrency;
 
 import com.eakonovalov.cryptography.SHA256HashGenerator;
 
+import java.math.BigDecimal;
 import java.security.PublicKey;
 
 public class TransactionOutput {
@@ -14,13 +15,13 @@ public class TransactionOutput {
     //the new owner of the coin
     private PublicKey receiver;
     //amount of coins
-    private double amount;
+    private BigDecimal amount;
 
-    public TransactionOutput(PublicKey receiver, double amount, String parentTransactionId) {
+    public TransactionOutput(PublicKey receiver, BigDecimal amount, String parentTransactionId) {
         this.receiver = receiver;
         this.amount = amount;
         this.parentTransactionId = parentTransactionId;
-        this.id = SHA256HashGenerator.generateAsString(receiver.toString() + Double.toString(amount) + parentTransactionId);
+        this.id = SHA256HashGenerator.generateAsString(receiver.toString() + amount.toPlainString() + parentTransactionId);
     }
 
     public boolean isMine(PublicKey publicKey) {
@@ -47,11 +48,11 @@ public class TransactionOutput {
         this.receiver = receiver;
     }
 
-    public double getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(double amount) {
+    public void setAmount(BigDecimal amount) {
         this.amount = amount;
     }
 
