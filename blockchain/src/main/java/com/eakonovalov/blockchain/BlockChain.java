@@ -1,4 +1,4 @@
-package com.eakonovalov.cryptocurrency.blockchain;
+package com.eakonovalov.blockchain;
 
 import java.util.LinkedList;
 

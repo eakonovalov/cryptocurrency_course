@@ -1,4 +1,4 @@
-package com.eakonovalov.cryptocurrency.cryptography;
+package com.eakonovalov.cryptography;
 
 public interface HashGenerator {
 

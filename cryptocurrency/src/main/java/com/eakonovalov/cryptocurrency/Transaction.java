@@ -1,11 +1,8 @@
 package com.eakonovalov.cryptocurrency;
 
-import com.eakonovalov.blockchain.BlockChain;
-import com.eakonovalov.cryptocurrency.cryptography.CryptographyHelper;
-import com.eakonovalov.cryptocurrency.cryptography.HashGenerator;
-import com.eakonovalov.cryptocurrency.cryptography.SHA256HashGenerator;
+import com.eakonovalov.cryptography.HashGenerator;
+import com.eakonovalov.cryptography.SHA256HashGenerator;
 
-import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,7 +10,7 @@ import java.util.List;
 public class Transaction {
 
     //id of the transaction is a hash
-    private String transactionId;
+    private String id;
     //we use PublicKeys to reference the sender or receiver
     private PublicKey sender;
     private PublicKey receiver;
@@ -39,68 +36,17 @@ public class Transaction {
         calulateHash();
     }
 
-    public boolean verifyTransaction() {
-        if (!verifySignature()) {
-            System.out.println("Invalid transaction because of invalid signature...");
-            return false;
-        }
-
-        //let's gather unspent transactions (we have to consider the inputs)
-        for (TransactionInput transactionInput : inputs) {
-            transactionInput.setUtxo(BlockChain.UTXOs.get(transactionInput.getTransactionOutputId()));
-        }
-
-        //transactions have 2 part: send an amount to the receiver + send the (balance-amount) back to the sender
-        outputs.add(new TransactionOutput(this.receiver, amount, transactionId)); //send value to recipient
-        outputs.add(new TransactionOutput(this.sender, getInputsSum() - amount, transactionId)); //send the left over 'change' back to sender
-
-        //the outputs will be inputs for other transactions (so put them in the blockchain's UTXOs)
-        for (TransactionOutput transactionOutput : outputs) {
-            BlockChain.UTXOs.put(transactionOutput.getId(), transactionOutput);
-        }
-
-        //remove transaction inputs from blockchain's UTXOs list because they've been spent
-        for (TransactionInput transactionInput : inputs) {
-            if (transactionInput.getUtxo() != null)
-                BlockChain.UTXOs.remove(transactionInput.getUtxo().getId());
-        }
-
-        return true;
-    }
-
-    public double getInputsSum() {
-        double sum = 0;
-
-        for (TransactionInput transactionInput : inputs) {
-            if (transactionInput.getUtxo() != null) {
-                sum += transactionInput.getUtxo().getAmount();
-            }
-        }
-
-        return sum;
-    }
-
-    public void generateSignature(PrivateKey privateKey) {
-        String data = sender.toString() + receiver.toString() + Double.toString(amount);
-        signature = CryptographyHelper.applyECDSASignature(privateKey, data);
-    }
-
-    public boolean verifySignature() {
-        String data = sender.toString() + receiver.toString() + Double.toString(amount);
-        return CryptographyHelper.verifyECDSASignature(sender, data, signature);
-    }
-
     private void calulateHash() {
         String hashData = sender.toString() + receiver.toString() + Double.toString(amount);
-        this.transactionId = hg.asString(hg.generate(hashData));
+        this.id = hg.asString(hg.generate(hashData));
     }
 
-    public String getTransactionId() {
-        return transactionId;
+    public String getId() {
+        return id;
     }
 
-    public void setTransactionId(String transactionId) {
-        this.transactionId = transactionId;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public PublicKey getSender() {
@@ -151,4 +97,12 @@ public class Transaction {
         this.outputs = outputs;
     }
 
+    @Override
+    public String toString() {
+        return "Transaction{" +
+                "sender=" + sender +
+                ", receiver=" + receiver +
+                ", amount=" + amount +
+                '}';
+    }
 }

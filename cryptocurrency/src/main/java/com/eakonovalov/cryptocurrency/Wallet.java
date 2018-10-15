@@ -1,7 +1,6 @@
 package com.eakonovalov.cryptocurrency;
 
-import com.eakonovalov.blockchain.BlockChain;
-import com.eakonovalov.cryptocurrency.cryptography.CryptographyHelper;
+import com.eakonovalov.cryptography.CryptographyHelper;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;
@@ -25,7 +24,7 @@ public class Wallet {
 
         double balance = 0;
 
-        for (Map.Entry<String, TransactionOutput> item : BlockChain.UTXOs.entrySet()) {
+        for (Map.Entry<String, TransactionOutput> item : UTXOStorage.UTXOs.entrySet()) {
             TransactionOutput transactionOutput = item.getValue();
             if (transactionOutput.isMine(publicKey)) {
                 balance += transactionOutput.getAmount();
@@ -45,7 +44,7 @@ public class Wallet {
         List<TransactionInput> inputs = new ArrayList<>();
 
         //let's find our unspent transactions (the blockchain stores all the UTXOs)
-        for (Map.Entry<String, TransactionOutput> item : BlockChain.UTXOs.entrySet()) {
+        for (Map.Entry<String, TransactionOutput> item : UTXOStorage.UTXOs.entrySet()) {
             TransactionOutput UTXO = item.getValue();
 
             if (UTXO.isMine(this.publicKey)) {
@@ -56,7 +55,7 @@ public class Wallet {
         //let's create the new transaction
         Transaction newTransaction = new Transaction(publicKey, receiver, amount, inputs);
         //the sender signs the transaction
-        newTransaction.generateSignature(privateKey);
+        newTransaction.setSignature(new TransactionVerifierImpl().generateSignature(newTransaction, privateKey));
 
         return newTransaction;
     }

@@ -1,11 +1,11 @@
-package com.eakonovalov.cryptocurrency.blockchain;
+package com.eakonovalov.blockchain;
 
 import java.util.concurrent.atomic.AtomicLong;
 
 public class Block {
 
     private long id;
-    private String transaction;
+    private String block;
     private long timestamp = System.currentTimeMillis();
 
     private String previousHash;
@@ -14,19 +14,19 @@ public class Block {
 
     private String payload;
 
-    public Block(long id, String transaction, String previousHash) {
+    public Block(long id, String block, String previousHash) {
         this.id = id;
-        this.transaction = transaction;
+        this.block = block;
         this.previousHash = previousHash;
-        payload = Long.toString(id) + "|" + transaction + "|" + timestamp + "|" + previousHash + "|";
+        payload = Long.toString(id) + "|" + block + "|" + timestamp + "|" + previousHash + "|";
     }
 
     public long getId() {
         return id;
     }
 
-    public String getTransaction() {
-        return transaction;
+    public String getBlock() {
+        return block;
     }
 
     public long getTimestamp() {
@@ -55,7 +55,7 @@ public class Block {
 
     @Override
     public String toString() {
-        return "Block{" + payload + hash + "|" + nounce + "}";
+        return "Block{" + payload + "|" + nounce + "}";
     }
 
 }

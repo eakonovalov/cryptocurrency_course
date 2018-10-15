@@ -7,6 +7,8 @@ import com.eakonovalov.blockchain.Miner;
 import org.junit.Test;
 
 import java.security.Security;
+import java.util.ArrayList;
+import java.util.List;
 
 public class WalletTest {
 
@@ -19,42 +21,54 @@ public class WalletTest {
         Wallet userA = new Wallet();
         Wallet userB = new Wallet();
         Wallet lender = new Wallet();
-        BlockChain chain = new BlockChain();
-        Miner miner = new Miner();
+        BlockChain blockChain = new BlockChain(2);
+        Miner miner = new Miner(blockChain);
+        TransactionVerifierImpl verifier = new TransactionVerifierImpl();
 
         //create genesis transaction that sends 500 coins to userA:
         Transaction genesisTransaction = new Transaction(lender.getPublicKey(), userA.getPublicKey(), 500, null);
-        genesisTransaction.generateSignature(lender.getPrivateKey());
-        genesisTransaction.setTransactionId("0");
-        genesisTransaction.outputs.add(new TransactionOutput(genesisTransaction.getReceiver(), genesisTransaction.getAmount(), genesisTransaction.getTransactionId()));
-        BlockChain.UTXOs.put(genesisTransaction.outputs.get(0).getId(), genesisTransaction.outputs.get(0));
+        genesisTransaction.setSignature(new TransactionVerifierImpl().generateSignature(genesisTransaction, lender.getPrivateKey()));
+        genesisTransaction.setId("0");
+        genesisTransaction.outputs.add(new TransactionOutput(genesisTransaction.getReceiver(), genesisTransaction.getAmount(), genesisTransaction.getId()));
+        UTXOStorage.UTXOs.put(genesisTransaction.outputs.get(0).getId(), genesisTransaction.outputs.get(0));
 
         System.out.println("Constructing the genesis block...");
-        Block genesis = new Block(Constants.GENESIS_PREV_HASH);
-        genesis.addTransaction(genesisTransaction);
-        miner.mine(genesis, chain);
+        Block genesis = new Block(0, genesisTransaction.toString(), Constants.GENESIS_HASH);
+        miner.mine(genesis);
 
-        Block block1 = new Block(genesis.getHash());
         System.out.println("\nuserA's balance is: " + userA.calculateBalance());
         System.out.println("\nuserA tries to send money (120 coins) to userB...");
-        block1.addTransaction(userA.transferMoney(userB.getPublicKey(), 120));
-        miner.mine(block1, chain);
+        List<Transaction> transactions = new ArrayList<>();
+        Transaction t = userA.transferMoney(userB.getPublicKey(), 120);
+        if(verifier.verifyTransaction(t)) {
+            transactions.add(t);
+        }
+        Block block1 = new Block(1, transactions.toString(), genesis.getHash());
+        miner.mine(block1);
         System.out.println("\nuserA's balance is: " + userA.calculateBalance());
         System.out.println("userB's balance is: " + userB.calculateBalance());
 
-        Block block2 = new Block(block1.getHash());
         System.out.println("\nuserA sends more funds (600) than it has...");
-        block2.addTransaction(userA.transferMoney(userB.getPublicKey(), 600));
-        miner.mine(block2, chain);
+        transactions = new ArrayList<>();
+        t = userA.transferMoney(userB.getPublicKey(), 600);
+        if(t != null && verifier.verifyTransaction(t)) {
+            transactions.add(t);
+        }
+        Block block2 = new Block(2, transactions.toString(), block1.getHash());
+        miner.mine(block2);
         System.out.println("\nuserA's balance is: " + userA.calculateBalance());
         System.out.println("userB's balance is: " + userB.calculateBalance());
 
-        Block block3 = new Block(block2.getHash());
         System.out.println("\nuserB is attempting to send funds (110) to userA...");
-        block3.addTransaction(userB.transferMoney(userA.getPublicKey(), 110));
+        transactions = new ArrayList<>();
+        t = userB.transferMoney(userA.getPublicKey(), 110);
+        if(verifier.verifyTransaction(t)) {
+            transactions.add(t);
+        }
+        Block block3 = new Block(3, transactions.toString(), block2.getHash());
         System.out.println("\nuserA's balance is: " + userA.calculateBalance());
         System.out.println("userB's balance is: " + userB.calculateBalance());
-        miner.mine(block3, chain);
+        miner.mine(block3);
 
         System.out.println("Miner's reward: " + miner.getReward());
 

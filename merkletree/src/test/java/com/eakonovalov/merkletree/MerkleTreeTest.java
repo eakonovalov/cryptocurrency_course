@@ -1,4 +1,4 @@
-package com.eakonovalov.cryptocurrency.merkletree;
+package com.eakonovalov.merkletree;
 
 import org.junit.Test;
 

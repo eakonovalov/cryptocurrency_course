@@ -1,7 +1,7 @@
-package com.eakonovalov.cryptocurrency.blockchain;
+package com.eakonovalov.blockchain;
 
-import com.eakonovalov.cryptocurrency.cryptography.HashGenerator;
-import com.eakonovalov.cryptocurrency.cryptography.SHA256HashGenerator;
+import com.eakonovalov.cryptography.HashGenerator;
+import com.eakonovalov.cryptography.SHA256HashGenerator;
 
 import java.math.BigDecimal;
 
