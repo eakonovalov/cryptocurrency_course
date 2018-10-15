@@ -1,7 +1,6 @@
 package com.eakonovalov.cryptocurrency;
 
 
-import com.eakonovalov.cryptography.HashGenerator;
 import com.eakonovalov.cryptography.SHA256HashGenerator;
 
 import java.security.PublicKey;
@@ -17,17 +16,11 @@ public class TransactionOutput {
     //amount of coins
     private double amount;
 
-    private HashGenerator hg = new SHA256HashGenerator();
-
     public TransactionOutput(PublicKey receiver, double amount, String parentTransactionId) {
         this.receiver = receiver;
         this.amount = amount;
         this.parentTransactionId = parentTransactionId;
-        generateId();
-    }
-
-    private void generateId() {
-        this.id = hg.asString(hg.generate(receiver.toString() + Double.toString(amount) + parentTransactionId));
+        this.id = SHA256HashGenerator.generateAsString(receiver.toString() + Double.toString(amount) + parentTransactionId);
     }
 
     public boolean isMine(PublicKey publicKey) {

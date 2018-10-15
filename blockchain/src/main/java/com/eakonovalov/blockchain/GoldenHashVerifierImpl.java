@@ -24,7 +24,7 @@ public class GoldenHashVerifierImpl implements GoldenHashVerifier {
         return true;
     }
 
-    protected int numberOfLeadingZeros(byte b) {
+    private int numberOfLeadingZeros(byte b) {
         if (b == 0) return 2;
         if (b >>> 4 == 0) return 1;
         return 0;

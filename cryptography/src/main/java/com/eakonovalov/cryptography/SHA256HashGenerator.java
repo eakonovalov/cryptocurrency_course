@@ -4,23 +4,27 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
-public class SHA256HashGenerator implements HashGenerator {
+public class SHA256HashGenerator {
 
-    private MessageDigest md;
+    private static final MessageDigest MD;
 
-    public SHA256HashGenerator() {
+    static {
         try {
-            md = MessageDigest.getInstance("SHA-256");
+            MD = MessageDigest.getInstance("SHA-256");
         } catch (NoSuchAlgorithmException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public byte[] generate(String payload) {
-        return md.digest(payload.getBytes(StandardCharsets.UTF_8));
+    public static byte[] generate(String data) {
+        return MD.digest(data.getBytes(StandardCharsets.UTF_8));
     }
 
-    public String asString(byte[] hash) {
+    public static String generateAsString(String data) {
+        return asString(generate(data));
+    }
+
+    public static String asString(byte[] hash) {
         StringBuilder hexadecimalString = new StringBuilder();
 
         for (byte b : hash) {

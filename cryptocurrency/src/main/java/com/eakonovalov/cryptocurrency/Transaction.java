@@ -1,6 +1,5 @@
 package com.eakonovalov.cryptocurrency;
 
-import com.eakonovalov.cryptography.HashGenerator;
 import com.eakonovalov.cryptography.SHA256HashGenerator;
 
 import java.security.PublicKey;
@@ -20,10 +19,8 @@ public class Transaction {
     private byte[] signature;
 
     //every transaction has inputs and outputs
-    public List<TransactionInput> inputs;
-    public List<TransactionOutput> outputs;
-
-    private HashGenerator hg = new SHA256HashGenerator();
+    private List<TransactionInput> inputs;
+    private List<TransactionOutput> outputs;
 
     // Constructor:
     public Transaction(PublicKey sender, PublicKey receiver, double amount, List<TransactionInput> inputs) {
@@ -33,12 +30,7 @@ public class Transaction {
         this.receiver = receiver;
         this.amount = amount;
         this.inputs = inputs;
-        calulateHash();
-    }
-
-    private void calulateHash() {
-        String hashData = sender.toString() + receiver.toString() + Double.toString(amount);
-        this.id = hg.asString(hg.generate(hashData));
+        this.id = SHA256HashGenerator.generateAsString(sender.toString() + receiver.toString() + Double.toString(amount));
     }
 
     public String getId() {
@@ -105,4 +97,5 @@ public class Transaction {
                 ", amount=" + amount +
                 '}';
     }
+
 }

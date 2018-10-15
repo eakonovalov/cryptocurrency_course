@@ -1,6 +1,5 @@
 package com.eakonovalov.merkletree;
 
-import com.eakonovalov.cryptography.HashGenerator;
 import com.eakonovalov.cryptography.SHA256HashGenerator;
 
 import java.util.ArrayList;
@@ -10,7 +9,6 @@ import java.util.List;
 public class MerkleTree {
 
     private List<String> transactions;
-    private HashGenerator hg = new SHA256HashGenerator();
 
     public MerkleTree(List<String> transactions) {
         this.transactions = transactions;
@@ -19,7 +17,7 @@ public class MerkleTree {
     public String getMerkleRoot() {
         if (transactions == null || transactions.size() == 0) return null;
 
-        if (transactions.size() == 1) return hg.asString(hg.generate(transactions.get(0)));
+        if (transactions.size() == 1) return SHA256HashGenerator.generateAsString(transactions.get(0));
 
         List<List<String>> tree = new ArrayList<>();
         tree.add(new ArrayList<>());
@@ -71,7 +69,7 @@ public class MerkleTree {
     }
 
     private String concat(String first, String second) {
-        return hg.asString(hg.generate(first + second));
+        return SHA256HashGenerator.generateAsString(first + second);
     }
 
 }

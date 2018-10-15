@@ -21,7 +21,6 @@ public class Wallet {
     }
 
     public double calculateBalance() {
-
         double balance = 0;
 
         for (Map.Entry<String, TransactionOutput> item : UTXOStorage.UTXOs.entrySet()) {
@@ -36,8 +35,7 @@ public class Wallet {
 
     public Transaction transferMoney(PublicKey receiver, double amount) {
         if (calculateBalance() < amount) {
-            System.out.println("Invalid transactin because of not enough money...");
-            return null;
+            throw new NotEnoughOfMoneyException();
         }
 
         //we store the inputs for the transaction in this array

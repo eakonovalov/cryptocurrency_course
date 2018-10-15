@@ -5,13 +5,6 @@ import java.security.spec.ECGenParameterSpec;
 
 public class CryptographyHelper {
 
-    private static final HashGenerator HG = new SHA256HashGenerator();
-
-    public static String generateHash(String payload) {
-        return HG.asString(HG.generate(payload));
-    }
-
-
     public static KeyPair ellipticCurveCrypto() {
         try {
             KeyPairGenerator keyPairGenerator = KeyPairGenerator.getInstance("ECDSA", "BC");

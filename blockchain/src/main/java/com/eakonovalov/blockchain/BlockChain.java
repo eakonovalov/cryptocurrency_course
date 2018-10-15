@@ -32,7 +32,7 @@ public class BlockChain {
     public String toString() {
         StringBuilder result = new StringBuilder();
         result.append("BlockChain{\n");
-        for(Block b : chain) {
+        for (Block b : chain) {
             result.append(b).append("\n");
         }
         result.append("}");
