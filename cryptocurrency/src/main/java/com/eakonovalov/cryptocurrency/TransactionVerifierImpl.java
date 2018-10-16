@@ -9,8 +9,7 @@ public class TransactionVerifierImpl {
 
     public boolean verifyTransaction(Transaction t) {
         if (!verifySignature(t)) {
-            System.out.println("Invalid t because of invalid signature...");
-            return false;
+            throw new SignatureVerificationException();
         }
 
         //let's gather unspent transactions (we have to consider the inputs)
